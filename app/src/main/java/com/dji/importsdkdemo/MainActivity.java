@@ -31,12 +31,18 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import dji.common.error.DJIError;
 import dji.common.error.DJISDKError;
+import dji.common.flightcontroller.Attitude;
+import dji.common.flightcontroller.LocationCoordinate3D;
+import dji.common.flightcontroller.imu.IMUState;
 import dji.sdk.base.BaseComponent;
 import dji.sdk.base.BaseProduct;
+import dji.sdk.products.Aircraft;
 import dji.sdk.sdkmanager.DJISDKInitEvent;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.thirdparty.afinal.core.AsyncTask;
@@ -47,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String FLAG_CONNECTION_CHANGE = "dji_sdk_connection_change";
     private static BaseProduct mProduct;
     private Handler mHandler;
+    private DroneStates state;
 
     private static final String[] REQUIRED_PERMISSION_LIST = new String[]{
             Manifest.permission.VIBRATE,
@@ -135,7 +142,11 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, String.format("onProductConnect newProduct:%s", baseProduct));
                             showToast("Product Connected");
                             notifyStatusChange();
+                            Aircraft drone = (Aircraft) DJISDKManager.getInstance().getProduct();
+                            Log.e("hoge",drone.toString());
+                            startDroneMonitor(drone);
                         }
+
                         @Override
                         public void onComponentChange(BaseProduct.ComponentKey componentKey, BaseComponent oldComponent,
                                                       BaseComponent newComponent) {
@@ -169,10 +180,26 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
+
             });
         }
     }
 
+    private  void startDroneMonitor(Aircraft drone) {
+        state = new DroneStates(drone);
+
+        new Timer().scheduleAtFixedRate(new TimerTask(){
+            @Override
+            public void run(){
+                float pitch = state.getPitch();
+                float roll = state.getRoll();
+                float yaw = state.getYaw();
+                String msg = String.format("%.2f %.2f %.2f",pitch,roll,yaw);
+
+//                Log.e("state", msg);
+            }
+        },0,100);
+    }
     private void notifyStatusChange() {
         mHandler.removeCallbacks(updateRunnable);
         mHandler.postDelayed(updateRunnable, 500);
