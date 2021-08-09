@@ -39,6 +39,10 @@ public class DroneStates {
     private float sensorAltitude;
     private float gpsAltitude;
 
+    private double latitude;
+    private double longitude;
+    private float altitude;
+
     private int batteryChargeRemaining;
     private int remainingFlightTime;
     private double distanceBetweenRCAndDrone;
@@ -64,6 +68,10 @@ public class DroneStates {
             location = flightControllerState.getAircraftLocation();
             sensorAltitude = flightControllerState.getUltrasonicHeightInMeters();
             gpsAltitude = flightControllerState.getAircraftLocation().getAltitude();
+
+            altitude = location.getAltitude();
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
 
             if(homeLocation == null){
                 homeLocation = location;
@@ -285,4 +293,29 @@ public class DroneStates {
 //    public int getIso() {
 //        return isoValue;
 //    }
+
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public float getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(float altitude) {
+        this.altitude = altitude;
+    }
 }

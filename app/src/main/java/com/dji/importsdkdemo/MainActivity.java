@@ -194,8 +194,10 @@ public class MainActivity extends AppCompatActivity {
                 float pitch = state.getPitch();
                 float roll = state.getRoll();
                 float yaw = state.getYaw();
+                float altitude = state.getAltitude();
+                double latitude = state.getLatitude();
+                double longitude = state.getLongitude();
                 String msg = String.format("%.2f %.2f %.2f",pitch,roll,yaw);
-
 //                Log.e("state", msg);
             }
         },0,100);
